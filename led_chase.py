@@ -14,7 +14,7 @@ from pimoroni import RGBLED, Button, Analog
 NUM_LEDS = 144
 
 # The speed that the LEDs will start cycling at
-DEFAULT_SPEED = 100
+DEFAULT_SPEED = 50
 
 # How many times the LEDs will be updated per second
 UPDATES = 60
@@ -46,8 +46,18 @@ count = 0
 
 direction = 1
 
+def random_color():
+    
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+    
+    return red, green, blue
 
-# Make rainbows
+
+
+
+# Make chaser
 while True:
     sw = user_sw.read()
     a = button_a.read()
@@ -57,31 +67,36 @@ while True:
         speed = DEFAULT_SPEED
     else:
         if a:
-            speed -= 1
+            speed -= 5
         if b:
-            speed += 1
+            speed += 5
 
     speed = min(255, max(1, speed))
 
     offset += float(speed) / 2000.0
 
+    led_color = random_color()
+
 
     for i in range(NUM_LEDS):
 
         if direction == 1:
-            led_strip.set_rgb(i, 128, 0, 0 )
+            led_strip.set_rgb(i, *led_color )
             time.sleep(1 / speed)
             led_strip.set_rgb(i, 0, 0, 0)
         else:
-            led_strip.set_rgb(NUM_LEDS - i, 0, 128, 0)
+            led_strip.set_rgb(NUM_LEDS - i, *led_color)
             time.sleep(1 / speed)
             led_strip.set_rgb(NUM_LEDS - i, 0, 0, 0)
 
         if i == NUM_LEDS - 1:
             direction *= -1
+            led_color = random_color()
+
         
         # print(direction, i)
     print("Current =", sense.read_current(), "A")
+    print("Speed = ", speed)
 
     # led.set_rgb(speed, 0, 255 - speed)
 
